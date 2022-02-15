@@ -6,48 +6,11 @@ import MakeData from "../components/MakeData";
 
 const Home: NextPage = () => {
   const [currentQuestion, setCurrentQuestion] = React.useState(0);
-  const [questions, setQuestions] = React.useState<any>([
-    {
-      questionText: "What is the capital of France?",
-      answerOptions: [
-        { answerText: "New York", isCorrect: false },
-        { answerText: "London", isCorrect: false },
-        { answerText: "Paris", isCorrect: true },
-        { answerText: "Dublin", isCorrect: false },
-      ],
-    },
-    {
-      questionText: "Who is CEO of Tesla?",
-      answerOptions: [
-        { answerText: "Jeff Bezos", isCorrect: false },
-        { answerText: "Elon Musk", isCorrect: true },
-        { answerText: "Bill Gates", isCorrect: false },
-        { answerText: "Tony Stark", isCorrect: false },
-      ],
-    },
-    {
-      questionText: "The iPhone was created by which company?",
-      answerOptions: [
-        { answerText: "Apple", isCorrect: true },
-        { answerText: "Intel", isCorrect: false },
-        { answerText: "Amazon", isCorrect: false },
-        { answerText: "Microsoft", isCorrect: false },
-      ],
-    },
-    {
-      questionText: "How many Harry Potter books are there?",
-      answerOptions: [
-        { answerText: "1", isCorrect: false },
-        { answerText: "4", isCorrect: false },
-        { answerText: "6", isCorrect: false },
-        { answerText: "7", isCorrect: true },
-      ],
-    },
-  ]);
+  const [questions, setQuestions] = React.useState<any>([]);
   const [showScore, setShowScore] = React.useState(false);
   const [score, setScore] = React.useState(0);
 
-  React.useEffect(() => {
+  React.useMemo(() => {
     MakeData().then((data) => {
       setQuestions(data);
     });
@@ -73,63 +36,87 @@ const Home: NextPage = () => {
           <meta name="description" content="Quiz App" />
           <link rel="icon" href="/favicon.ico" />
         </Head>
+        <h1 className="app-header">Quiz App</h1>
       </div>
-      <div className="app">
-        {showScore ? (
-          <div className="score-section">
-            You scored {score} out of {questions.length}
-            <button
-              onClick={() => {
-                setCurrentQuestion(0);
-                setScore(0);
-                setShowScore(false);
-              }}
-            >
-              Reset
-            </button>
-          </div>
-        ) : (
-          <>
-            <div className="question-section">
-              <div className="question-count">
-                <span>Question {currentQuestion + 1}</span>/{questions.length}
-              </div>
-              <div className="question-text">
-                {questions[currentQuestion].questionText}
+      <div style={{ padding: "10px" }}>
+        <div className="app">
+          {questions.length === 0 ? (
+            <div className="loader-parent">
+              <div className="lds-roller">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
               </div>
             </div>
-            <div className="answer-section">
-              {questions.length > 1 &&
-                questions[currentQuestion].answerOptions.map(
-                  (
-                    answerOption: {
-                      isCorrect: boolean;
-                      answerText: boolean | null | undefined;
-                    },
-                    index: React.Key | null | undefined
-                  ) => (
-                    <button
-                      onClick={() =>
-                        handleAnswerOptionClick(answerOption.isCorrect)
-                      }
-                      key={index}
-                    >
-                      {answerOption.answerText}
-                    </button>
-                  )
-                )}
-            </div>
-          </>
-        )}
+          ) : (
+            <>
+              {showScore ? (
+                <div className="score-section">
+                  You scored {score} out of {questions.length}
+                  <button
+                    onClick={() => {
+                      setCurrentQuestion(0);
+                      setScore(0);
+                      setShowScore(false);
+                    }}
+                  >
+                    Reset
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <div className="question-section">
+                    <div className="question-count">
+                      <span>Question {currentQuestion + 1}</span>/
+                      {questions.length}
+                    </div>
+                    <div className="question-text">
+                      {questions.length > 1 &&
+                        questions[currentQuestion].questionText}
+                    </div>
+                  </div>
+                  <div className="answer-section">
+                    {questions.length > 1 &&
+                      questions[currentQuestion].answerOptions.map(
+                        (
+                          answerOption: {
+                            isCorrect: boolean;
+                            answerText: boolean | null | undefined;
+                          },
+                          index: React.Key | null | undefined
+                        ) => (
+                          <button
+                            onClick={() =>
+                              handleAnswerOptionClick(answerOption.isCorrect)
+                            }
+                            key={index}
+                          >
+                            {answerOption.answerText}
+                          </button>
+                        )
+                      )}
+                  </div>
+                </>
+              )}
+            </>
+          )}
+        </div>
+        <button
+          className={`${
+            currentQuestion === 0 ? "incorrect" : "correct"
+          } finish`}
+          onClick={() => {
+            setShowScore(true);
+          }}
+        >
+          {currentQuestion === 0 ? "Refresh Quiz" : "Finish Quiz"}
+        </button>
       </div>
-      <button
-        className={`${currentQuestion === 0 ? "incorrect" : "correct"} finish`}
-        onClick={() => {
-          setShowScore(true);
-        }}
-      >
-        {currentQuestion === 0 ? "Reset Quiz" : "Finish Quiz"}
-      </button>
     </>
   );
 };
