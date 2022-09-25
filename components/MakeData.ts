@@ -26,7 +26,7 @@ function shuffle(array: any) {
 
 const MakeData = async () => {
 
-  const res = await axios.get('https://opentdb.com/api.php?amount=10&category=9&difficulty=medium&type=multiple')
+  const res = await axios.get('https://opentdb.com/api.php?amount=10&category=19&difficulty=medium&type=multiple')
 
 
   const data = await res.data.results
